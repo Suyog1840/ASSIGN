@@ -1,0 +1,666 @@
+1] Binary search
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int binarySearch(int arr[], int low, int high, int key) {
+    if (low <= high) {
+        int mid =  (low + high) / 2;
+
+        if (arr[mid] == key) {
+            return mid;
+        }
+        if (arr[mid] > key) {
+            return binarySearch(arr, low, mid - 1, key);
+        }
+        return binarySearch(arr, mid + 1, high, key);
+    }
+    return -1;
+}
+
+int main() {
+    const int n = 5000;
+    int arr[n];
+    srand(time(0));
+ 
+   
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 10000;
+    }
+
+    sort(arr, arr+n);
+    
+    int key;
+    cout << "Enter the key to search: ";
+    cin >> key;
+
+    int result = binarySearch(arr, 0, n - 1, key);
+
+    if (result != -1) {
+        cout << "Key found at index: " << result << endl;
+    } else {
+        cout << "Key not found in the list." << endl;
+    }
+
+    return 0;
+}
+--------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------
+2] Merge sort**************
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void merge(vector<int>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    vector<int> L(n1), R(n2);
+
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (int i = 0; i < n2; i++)
+        R[i] = arr[mid + 1 + i];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    vector<int> arr = {38, 27, 43, 3, 9, 82, 10};
+
+    cout << "Original array: ";
+    for (int num : arr)
+        cout << num << " ";
+    cout << endl;
+
+    mergeSort(arr, 0, arr.size() - 1);
+
+    cout << "Sorted array: ";
+    for (int num : arr)
+        cout << num << " ";
+    cout << endl;
+
+    return 0;
+}
+
+------------------------------------------------------------------------------------------------
+Quick sort *******
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int main() {
+    vector<int> arr = {10, 7, 8, 9, 1, 5};
+
+    quickSort(arr, 0, arr.size() - 1);
+
+    for (int num : arr)
+        cout << num << " ";
+    cout << endl;
+
+    return 0;
+}
+
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+3] Knapsack using greedy approach ************						***************
+
+#include<bits/stdc++.h>
+using namespace std;
+
+class items{
+    public:
+    int profit;
+    int weight;
+    items(int profit,int weight)
+    {
+        this->profit=profit;
+        this->weight=weight;
+    }
+};
+
+bool comp(items a, items b) {
+    return (a.profit / (double)a.weight > b.profit / (double)b.weight);
+}
+
+double fractknap(int W,items arr[],int n)
+{
+    sort(arr,arr+n,comp);
+    double max_profit=0.0;
+    double curr_w=0;
+
+    for(int i=0;i<n;i++)
+    {
+        if(curr_w+arr[i].weight<=W)
+        {
+            curr_w+=arr[i].weight;
+            max_profit+=arr[i].profit;
+        }
+        else{
+            double rem_w=W-curr_w;
+            max_profit+=arr[i].profit*((double)rem_w/arr[i].weight);
+            break;
+        }
+    }
+    return max_profit;
+}
+int main()
+{
+    int W=20;
+    int n=5;
+    items arr[]={items(10, 3), items(20, 5), items(21, 5),items(30, 8), items(16, 4)};
+    cout<<"The output is :"<<fractknap(W,arr,n);
+    return 0;
+}
+-----------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
+4] Floyd Warshall																***********************
+
+#include <iostream>
+using namespace std;
+#define V 4
+#define INF 99999
+
+void floydWarshall(int graph[][V]) {
+    int dist[V][V];
+    
+   
+    for (int i = 0; i < V; i++)
+        for (int j = 0; j < V; j++)
+            dist[i][j] = graph[i][j];
+    
+    
+    for (int k = 0; k < V; k++)
+        for (int i = 0; i < V; i++)
+            for (int j = 0; j < V; j++)
+                if (dist[i][k] != INF && dist[k][j] != INF)
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+
+    
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++)
+            cout << (dist[i][j] == INF ? "INF" : to_string(dist[i][j])) << "\t";
+        cout << endl;
+    }
+}
+
+int main() {
+    int graph[V][V] = {
+        { 0, 5, INF, 10 },
+        { INF, 0, 3, INF },
+        { INF, INF, 0, 1 },
+        { INF, INF, INF, 0 }
+    };
+    floydWarshall(graph);
+    return 0;
+}
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+5] Knapsack using backtracking							**************************************
+#include <bits/stdc++.h>
+using namespace std;
+
+int max(int a, int b)
+{
+	return (a > b) ? a : b;
+}
+
+int knapSack(int W, int wt[], int val[], int n)
+{
+	int i, w;
+	vector<vector<int>> K(n + 1, vector<int>(W + 1));
+
+	for (i = 0; i <= n; i++)
+	{
+		for (w = 0; w <= W; w++)
+		{
+			if (i == 0 || w == 0)
+				K[i][w] = 0;
+			else if (wt[i - 1] <= w)
+				K[i][w] = max(val[i - 1] +
+								  K[i - 1][w - wt[i - 1]],
+							  K[i - 1][w]);
+			else
+				K[i][w] = K[i - 1][w];
+		}
+	}
+	return K[n][W];
+}
+
+int main()
+{
+	int val[] = {60, 100, 120};
+	int wt[] = {10, 20, 30};
+	int W = 50;
+	int n = sizeof(val) / sizeof(val[0]);
+	cout << knapSack(W, wt, val, n);
+	return 0;
+}
+
+----------------------------------------
+
+//// knapsack using dp
+#include <bits/stdc++.h>
+using namespace std;
+int knapSack(int W, int wt[], int val[], int n)
+{
+	int dp[W + 1];
+	memset(dp, 0, sizeof(dp));
+
+	for (int i = 1; i < n + 1; i++) {
+		for (int w = W; w >= 0; w--) {
+
+			if (wt[i - 1] <= w)
+				dp[w] = max(dp[w],
+							dp[w - wt[i - 1]] + val[i - 1]);
+		}
+	}
+	return dp[W]; 
+}
+int main()
+{
+	int val[] = { 60, 100, 120 };
+	int wt[] = { 10, 20, 30 };
+	int W = 50;
+	int n = sizeof(val) / sizeof(val[0]);
+	cout << knapSack(W, wt, val, n);
+	return 0;
+}
+
+-----------------------------------------------
+/// knapsack using branch and bound
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Item
+{
+	float weight;
+	int value;
+};
+
+struct Node
+{
+	int level, profit, bound;
+	float weight;
+};
+
+bool cmp(Item a, Item b)
+{
+	double r1 = (double)a.value / a.weight;
+	double r2 = (double)b.value / b.weight;
+	return r1 > r2;
+}
+
+int bound(Node u, int n, int W, Item arr[])
+{
+	if (u.weight >= W)
+		return 0;
+
+	int profit_bound = u.profit;
+
+	int j = u.level + 1;
+	int totweight = u.weight;
+
+	while ((j < n) && (totweight + arr[j].weight <= W))
+	{
+		totweight += arr[j].weight;
+		profit_bound += arr[j].value;
+		j++;
+	}
+
+	if (j < n)
+		profit_bound += (W - totweight) * arr[j].value /
+										arr[j].weight;
+
+	return profit_bound;
+}
+
+int knapsack(int W, Item arr[], int n)
+{
+	sort(arr, arr + n, cmp);
+
+	queue<Node> Q;
+	Node u, v;
+
+	u.level = -1;
+	u.profit = u.weight = 0;
+	Q.push(u);
+
+	int maxProfit = 0;
+	while (!Q.empty())
+	{
+		u = Q.front();
+		Q.pop();
+
+		if (u.level == -1)
+			v.level = 0;
+
+		if (u.level == n-1)
+			continue;
+
+		v.level = u.level + 1;
+
+		v.weight = u.weight + arr[v.level].weight;
+		v.profit = u.profit + arr[v.level].value;
+
+		if (v.weight <= W && v.profit > maxProfit)
+			maxProfit = v.profit;
+
+		v.bound = bound(v, n, W, arr);
+
+		if (v.bound > maxProfit)
+			Q.push(v);
+
+		v.weight = u.weight;
+		v.profit = u.profit;
+		v.bound = bound(v, n, W, arr);
+		if (v.bound > maxProfit)
+			Q.push(v);
+	}
+	return maxProfit;
+}
+
+int main()
+{
+	int W = 10; 
+	Item arr[] = {{2, 40}, {3.14, 50}, {1.98, 100},
+				{5, 95}, {3, 30}};
+	int n = sizeof(arr) / sizeof(arr[0]);
+
+	cout << "Maximum possible profit = "
+		<< knapsack(W, arr, n);
+
+	return 0;
+}
+
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+6]  N queens
+
+#include<bits/stdc++.h>
+using namespace std;
+class Nqueens{
+    public:
+    int N;
+    vector<vector<int>>board;
+    Nqueens(int N)
+    {
+        this->N=N;
+        board.resize(N,vector<int>(N,0));
+    }
+
+    bool issafe(int row,int col)
+    {
+        //leftside row
+        for (int i = 0; i < col; i++)
+        {
+            if(board[row][i])
+            {
+                return false;
+            }
+        }
+        
+        //left upper diagonal
+        for(int i=row,j=col; i>=0 && j>=0;i-- && j--)
+        {
+            if(board[i][j])
+            {
+                return false;
+            }
+        }
+        //left down diagonal
+        for(int i=row,j=col; i<N && j>=0;i++ && j--)
+        {
+            if(board[i][j])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool solveNqueen(int col)
+    {
+        if(col>=N)
+        {
+            return true;
+        }
+        for(int i=0;i<N;i++)
+        {
+            if(issafe(i,col))
+            {
+                board[i][col]=1;
+                if(solveNqueen(col+1))
+                {
+                    return true;
+                }
+                board[i][col]=0;
+            }
+        }
+        return false;
+    }
+
+    void printsoln(){
+        for(int i=0;i<N;i++)
+        {
+            for(int j=0;j<N;j++)
+            {
+                cout<<board[i][j]<<" ";
+            }
+            cout<<endl;
+        }
+    }
+
+
+    void solve(){
+        if (N == 3 || N==2) {
+            cout << "No solution" << endl;
+            return;
+        }
+        if(solveNqueen(0))
+        {
+            printsoln();
+        }
+        else{
+            cout<<"No solution";
+        }
+    }
+};
+
+int main()
+{
+    int N;
+    cout<<"Enter no of queens";
+    cin>>N;
+
+    Nqueens queens(N);
+
+    queens.solve();
+    return 0;
+}
+
+--------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+
+7]  Subset
+
+#include <bits/stdc++.h>
+using namespace std;
+
+bool** dp;
+
+void display(const vector<int>& v)
+{
+	for (int i = 0; i < v.size(); ++i)
+		printf("%d ", v[i]);
+	printf("\n");
+}
+
+void printSubsetsRec(int arr[], int i, int sum, vector<int>& p)
+{
+	if (i == 0 && sum != 0 && dp[0][sum])
+	{
+		p.push_back(arr[i]);
+		if (arr[i] == sum)
+			display(p);
+		return;
+	}
+
+	if (i == 0 && sum == 0)
+	{
+		display(p);
+		return;
+	}
+
+	if (dp[i-1][sum])
+	{
+		vector<int> b = p;
+		printSubsetsRec(arr, i-1, sum, b);
+	}
+
+	if (sum >= arr[i] && dp[i-1][sum-arr[i]])
+	{
+		p.push_back(arr[i]);
+		printSubsetsRec(arr, i-1, sum-arr[i], p);
+	}
+}
+
+void printAllSubsets(int arr[], int n, int sum)
+{
+	if (n == 0 || sum < 0)
+	return;
+
+	dp = new bool*[n];
+	for (int i=0; i<n; ++i)
+	{
+		dp[i] = new bool[sum + 1];
+		dp[i][0] = true;
+	}
+
+	if (arr[0] <= sum)
+	dp[0][arr[0]] = true;
+
+	for (int i = 1; i < n; ++i)
+		for (int j = 0; j < sum + 1; ++j)
+			dp[i][j] = (arr[i] <= j) ? dp[i-1][j] ||
+									dp[i-1][j-arr[i]]
+									: dp[i - 1][j];
+	if (dp[n-1][sum] == false)
+	{
+		printf("There are no subsets with sum %d\n", sum);
+		return;
+	}
+
+	vector<int> p;
+	printSubsetsRec(arr, n-1, sum, p);
+}
+
+int main()
+{
+	int arr[] = {1, 2, 5, 6, 8};
+	int n = sizeof(arr)/sizeof(arr[0]);
+	int sum = 9;
+	printAllSubsets(arr, n, sum);
+	return 0;
+}
+
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+8] tsp using dp
+
+#include <iostream>
+using namespace std;
+
+const int n = 4;
+const int MAX = 1000000;
+int dist[n + 1][n + 1] = {
+    {0, 0, 0, 0, 0},
+    {0, 0, 10, 15, 20},
+    {0, 10, 0, 35, 25},
+    {0, 15, 35, 0, 30},
+    {0, 20, 25, 30, 0},
+};
+int memo[n + 1][1 << (n + 1)];
+int fun(int i, int mask)
+{
+    if (mask == ((1 << i) | 3 ))
+        return dist[1][i];
+    if (memo[i][mask] != 0)
+        return memo[i][mask];
+    int res = MAX;
+    for (int j = 1; j <= n; j++)
+        if ((mask & (1 << j)) && j != i && j != 1)
+            res = std::min(res, fun(j, mask & (~(1 << i))) + dist[j][i]);
+    return memo[i][mask] = res;
+}
+
+int main()
+{
+    int ans = MAX;
+    int fullMask = (1 << (n + 1)) - 1; 
+    for (int i = 1; i <= n; i++)
+    {
+        int cost = fun(i, fullMask) + dist[i][1]; 
+        ans = std::min(ans, cost);       
+    }
+
+    cout << "The cost of most efficient tour =" << ans;
+    return 0;
+}
